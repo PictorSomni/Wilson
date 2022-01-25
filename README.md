@@ -1,3 +1,5 @@
+![IMG_0719](https://user-images.githubusercontent.com/16622605/151033781-299a607c-4000-47ac-89de-97c09490417d.JPG)
+![IMG_0720](https://user-images.githubusercontent.com/16622605/151033790-c610610b-68f3-4d07-8a57-fb2bb8657ca4.JPG)
 # Wilson
 Here's Wilson, the lockdown friend.
 Wilson can show hardcoded emotions with his OLED display "face" and voice and can be upgraded with Bluetooth actions.
