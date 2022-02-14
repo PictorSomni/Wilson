@@ -3,7 +3,7 @@
 #######################################
 import os
 import random
-from time import sleep
+from time import monotonic
 import gc
 
 # import adafruit_imageload
@@ -75,6 +75,12 @@ ss.pin_mode(BUTTON_2, ss.INPUT_PULLUP)
 #######################################
 #              FUNCTIONS              #
 #######################################
+def wait(wait):
+    now = monotonic()
+    while (monotonic() - now) < wait :
+        pass
+
+
 def attitude(image) :
     # bitmap, palette = adafruit_imageload.load(f"/sd/images/{image}.bmp",
     #                                       bitmap=displayio.Bitmap,
@@ -123,18 +129,18 @@ def control(servo, start, end, delay=DELAY, increment=1):
         increment = -increment
     for angle in range(int(start), int(end), increment):  # min to max degrees
         servo.angle = angle
-        sleep(delay)
+        wait(delay)
 
 #######################################
 #               BEHAVIOR              #
 #######################################
 def hello():    
     attitude("nice")
-    control(crickit.servo_1, crickit.servo_1.angle, 40)
+    control(crickit.servo_1, crickit.servo_1.angle, 40, DELAY)
     attitude("nice")
     play_file("hello")
     attitude("happy")
-    sleep(1)
+    wait(1)
     control(crickit.servo_1, crickit.servo_1.angle, 70, DELAY)
 
 def grumpy():
@@ -144,21 +150,21 @@ def grumpy():
     play_file("hey")
     attitude("doubt")
     control(crickit.servo_1, crickit.servo_1.angle, 40, DELAY)
-    sleep(1)
+    wait(1)
     control(crickit.servo_2, crickit.servo_2.angle, 50, DELAY)
     play_file("ah")
     control(crickit.servo_1, crickit.servo_1.angle, 70, DELAY)
-    sleep(1)
+    wait(1)
     control(crickit.servo_2, crickit.servo_2.angle, 90, DELAY)
 
 def love():
     attitude("happy")
     control(crickit.servo_1, crickit.servo_1.angle, 40, DELAY)
     play_file("heyho")
-    sleep(0.5)
+    wait(0.5)
     attitude("love")
     play_file("hooo")
-    sleep(1)
+    wait(1)
     attitude("happy")
     play_file("haha")
     control(crickit.servo_1, crickit.servo_1.angle, 70, DELAY)
@@ -167,65 +173,46 @@ def dead():
     attitude("dead")
     control(crickit.servo_1, crickit.servo_1.angle, 40, DELAY)
     play_file("ok")
-    sleep(1)
+    wait(1)
     control(crickit.servo_1, crickit.servo_1.angle, 70, DELAY)
 
 def wtf():    
     attitude("small")
     control(crickit.servo_1, crickit.servo_1.angle, 40, DELAY)
     play_file("wow")
-    sleep(1)
+    wait(1)
     control(crickit.servo_1, crickit.servo_1.angle, 70, DELAY)
 
 def hide():
+    wait(2)
+    attitude("small")
+    wait(1)
     attitude("ninja")
     play_file("hum")
-    sleep(1)
+    wait(1)
     motor1.throttle = -1
     motor2.throttle = 1
-    sleep(0.7)
+    wait(0.5)
     motor1.throttle = 0
     motor2.throttle = 0
-    sleep(1)
-    motor1.throttle = 0
-    motor2.throttle = 0
-    sleep(0.5)
-    motor1.throttle = 0.2
-    motor2.throttle = 0.2
-    sleep(1)
-    motor1.throttle = 0
-    motor2.throttle = 0
-    sleep(0.5)
-    motor1.throttle = -0.2
-    motor2.throttle = -0.2
-    sleep(2)
-    motor1.throttle = 0
-    motor2.throttle = 0
-    sleep(0.5)
-    motor1.throttle = 0.2
-    motor2.throttle = 0.2
-    sleep(1)
-    motor1.throttle = 0
-    motor2.throttle = 0
-    sleep(0.5)
-    color()
-    play_file("tada")
+    wait(0.5)
+    play_file("hum")
     motor1.throttle = 1
     motor2.throttle = -1
-    sleep(0.6)
+    wait(0.5)
     motor1.throttle = 0
     motor2.throttle = 0
 
 def forward():
    motor1.throttle = -1
    motor2.throttle = 1
-   sleep(0.5)
+   wait(0.5)
    stop()
 
 def backward():
    motor1.throttle = 1
    motor2.throttle = -1
-   sleep(0.5)
+   wait(0.5)
    stop()
 
 def stop():

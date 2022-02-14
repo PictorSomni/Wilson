@@ -3,22 +3,17 @@
 #######################################
 import wilson
 import random
+from time import monotonic
 
 from adafruit_ble import BLERadio
-from adafruit_ble.advertising.standard import ProvideServicesAdvertisement
-from adafruit_ble.services.nordic import UARTService
-
-from adafruit_bluefruit_connect.packet import Packet
-# Only the packet classes that are imported will be known to Packet.
-from adafruit_bluefruit_connect.button_packet import ButtonPacket
+from adafruit_ble.advertising.adafruit import AdafruitColor
 
 #######################################
 #                 INIT                #
 #######################################
 ## Bluetooth low energy
 ble = BLERadio()
-uart_service = UARTService()
-advertisement = ProvideServicesAdvertisement(uart_service)
+advertisement = AdafruitColor()
 
 ## Wilson's behaviors
 behaviour = [wilson.hello, wilson.grumpy, wilson.love, wilson.wtf, wilson.dead]
@@ -27,30 +22,30 @@ behaviour = [wilson.hello, wilson.grumpy, wilson.love, wilson.wtf, wilson.dead]
 #              MAIN LOOP              #
 #######################################
 while True:
-    ble.start_advertising(advertisement)
-
-    while not ble.connected:
-        wilson.idle()
-        # print(crickit.touch_1.raw_value)
+    wilson.attitude("blink")
+    t = monotonic()
+    while monotonic() - t < random.randint(2, 10):
+        wilson.attitude("open")
         if not wilson.ss.digital_read(wilson.BUTTON_1):
             random.choice(behaviour)()
         if not wilson.ss.digital_read(wilson.BUTTON_2):
-            wilson.hide()
+            wilson.hide()  
 
-    while ble.connected:
-        wilson.idle()
-        if uart_service.in_waiting:
-            # Packet is arriving.
-            packet = Packet.from_stream(uart_service)
-            if isinstance(packet, ButtonPacket) and packet.pressed:
-                if packet.button == ButtonPacket.UP :
-                    wilson.forward()
+        for entry in ble.start_scan(AdafruitColor, timeout=5):
+            print(f"#{entry.color:06x}\n")
 
-                elif packet.button == ButtonPacket.DOWN :
-                    wilson.backward()
+            if entry.color == 0x110000 :
+                wilson.hide()
+                break
+            
+            elif entry.color == 0x000011 :
+                random.choice(behaviour)()
+                break
+            
+            elif entry.color == 0x001100 :
+                wilson.wait(1)
+                wilson.wtf()
+                wilson.wait(3)
+                break
 
-                elif packet.button == ButtonPacket.BUTTON_1:
-                    random.choice(behaviour)()
-
-                elif packet.button == ButtonPacket.BUTTON_2:
-                    wilson.hide()
+    ble.stop_scan()
